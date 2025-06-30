@@ -1,4 +1,5 @@
-from bs4 import BeautifulSoup
+import bs4
+from bs4 import NavigableString
 import re
 import requests
 import pandas as pd
@@ -35,7 +36,7 @@ def getFighters(bout_soup: bs4.BeautifulSoup) -> tuple[str, str]:
 
 def getFightWinner(bout_soup: bs4.BeautifulSoup) -> str:
 
-        '''
+    '''
     Fetches the winner of bout
         
     Parameters:
@@ -102,7 +103,7 @@ def getFightWeightClass(bout_soup: bs4.BeautifulSoup) -> str:
     # return weight_class
     return weight_class
 
-def getFightInfo(bout_soup: bs4.BeautifulSoup) -> str:
+def getFightOutcome(bout_soup: bs4.BeautifulSoup) -> str:
         	    
     '''
     Fetches a tuple of the bout's fighters' names
@@ -238,7 +239,7 @@ def getSigStrkTrgts(bout_soup: bs4.BeautifulSoup) -> str:
     
     return fighter_1_sig_strk_stats, fighter_2_sig_strk_stats
 
-	def extractFightStats(bout_soup: bs4.BeautifulSoup) -> str:
+def getFightStats(bout_soup: bs4.BeautifulSoup) -> str:
             	    
     '''
     Fetches a summary and round by round stats for a bout
@@ -292,4 +293,5 @@ def getSigStrkTrgts(bout_soup: bs4.BeautifulSoup) -> str:
     return totals, totals_pr_rnd, sig_strks_totals, sig_strks_pr_rnd
 
 if __name__ == "__main__":
+	
     main()
