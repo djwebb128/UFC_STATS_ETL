@@ -24,6 +24,28 @@ def getEventUrls(event_soup: BeautifulSoup) -> BeautifulSoup:
 	
 	return event_url_list
 
+def getEventNames(event_soup: BeautifulSoup) -> BeautifulSoup:
+    
+    '''
+    Fetches the event names found on the given UFC Stats url
+        
+    Parameters:
+    ----------------    
+    
+    string: unmodified target events names
+    
+    Returns:
+    ----------------    
+    
+        list: python object containing strings of event names
+    '''
+	
+    event_names = event_soup.findAll("a", attrs={"href": re.compile("event-details")})
+
+    event_names_list = [event_name.text.strip() for event_name in event_names]
+    
+    return event_names_list[1:]
+
 def getEventDates(event_soup: BeautifulSoup) -> BeautifulSoup:
     
     '''
@@ -63,7 +85,7 @@ def getEventLocations(event_soup: BeautifulSoup) -> BeautifulSoup:
 	'''
 	event_locations = event_soup.findAll("td", attrs={"class": re.compile("b-statistics__table-col b-statistics__table-col")})
 	
-	event_location_list = [event_location.text.strip().split(',') for event_location in event_locations[1:]]
+	event_location_list = [event_location.text.strip() for event_location in event_locations[1:]]
 	
 	return event_location_list
 
@@ -92,9 +114,3 @@ def getEventFightUrls(event_details_url: str) -> str:
     event_fight_url_list = [fight.get("href") for fight in event_fights]
     
     return event_fight_url_list
-
-def getFightStatsTables(fight_url):
-    
-    fight_stats_tables_list = pd.read_html(fight_url)
-
-    return fight_stats_tables_list
