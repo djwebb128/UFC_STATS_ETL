@@ -25,9 +25,10 @@ def getFighters(bout_soup: bs4.BeautifulSoup) -> tuple[str, str]:
 
     #ensuring the return of null values if fighter(s) absent
     fighter_1, fighter_2 = None, None
-    
+
+    #isolating the fighter assigned to each corner
     if fighter_n == 2:
-		
+
         fighter_1 = bout_soup.findAll("a", attrs={"class": re.compile("b-link b-fight-details__person-link")})[0].text.strip()
 		
         fighter_2 = bout_soup.findAll("a", attrs={"class": re.compile("b-link b-fight-details__person-link")})[1].text.strip()
@@ -90,6 +91,7 @@ def getFightWeightClass(bout_soup: bs4.BeautifulSoup) -> str:
     
     weight_class_words = weight_class_raw.split()
 
+    #identifying strings with weight key word
     weight_class_search = [weight for weight in weight_class_words if weight.endswith('weight')]
 
     if len(weight_class_search) == 1:
@@ -158,7 +160,7 @@ def getFightOutcome(bout_soup: bs4.BeautifulSoup) -> str:
                 
         elif 'Time:' in detail.text:
             
-            text = detail.text.split(':')[1].strip()
+            text = detail.text.strip().split(maxsplit=1)[1]
             
             if text == '':
                 
@@ -232,12 +234,8 @@ def getSigStrkTrgts(bout_soup: bs4.BeautifulSoup) -> str:
     for stat in sig_strk_brkdn_list:
         
         stats_list.append(stat.text.strip())
-        
-    fighter_1_sig_strk_stats = stats_list[:-1:2]
     
-    fighter_2_sig_strk_stats = stats_list[1::2]
-    
-    return fighter_1_sig_strk_stats, fighter_2_sig_strk_stats
+    return stats_list
 
 def getFightStats(bout_soup: bs4.BeautifulSoup) -> str:
             	    
@@ -279,7 +277,8 @@ def getFightStats(bout_soup: bs4.BeautifulSoup) -> str:
                 if not item.find('a'):
                     
                     section_data.append(item.get_text(strip=True))
-                    
+
+            section_data = [None if '--' in item or '---' in item else item for item in section_data]
             sections_data.append(section_data)
         
         totals = sections_data[0]
@@ -291,6 +290,52 @@ def getFightStats(bout_soup: bs4.BeautifulSoup) -> str:
         sig_strks_pr_rnd = sections_data[3]
     
     return totals, totals_pr_rnd, sig_strks_totals, sig_strks_pr_rnd
+
+def extractFightData(bout_soup):
+            	    
+    '''
+    Fetches a dictionary of all fight summary and round by round statistics
+        
+    Parameters:
+    ----------------    
+
+	BeautifulSoup: unmodified, parsed target bout url
+    
+    Returns:
+    ----------------    
+    
+    dictionary: {
+                'matchup': bout_matchups_list,
+                'winner': bout_winner,
+                'weight_class': bout_weight_class,
+                'outcome': bout_outcome,
+                'fight_stats_list': bout_stats_list,
+                'sig_strks_list': bout_sig_strks_list
+                }
+    '''
+
+    bout_matchups_list = getFighters(bout_soup)
+
+    bout_winner = getFightWinner(bout_soup)
+
+    bout_weight_class = getFightWeightClass(bout_soup)
+
+    bout_outcome = getFightOutcome(bout_soup)
+    
+    bout_sig_strks_list = getSigStrkTrgts(bout_soup)
+
+    bout_stats_list = getFightStats(bout_soup)
+
+    fight_data_dict = {
+                        'matchup': bout_matchups_list,
+                        'winner': bout_winner,
+                        'weight_class': bout_weight_class,
+                        'outcome': bout_outcome,
+                        'fight_stats_list': bout_stats_list,
+                        'sig_strks_list': bout_sig_strks_list
+                        }
+
+    return fight_data_dict
 
 if __name__ == "__main__":
 	
