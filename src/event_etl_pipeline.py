@@ -27,18 +27,20 @@ if not os.path.exists("./data/ingested_event_urls.csv"):
     
 else:
     
-    print("./data/ingested_event_urls.csv already present")
+    print("../data/ingested_event_urls.csv already present")
 
 # loading history of previously ingested events
-ingested_event_url_list = []
-
-with open("./data/ingested_event_urls.csv", "r") as file:
+with open("./data/ingested_event_urls.csv", newline="") as file:
     
     read_file = csv.reader(file)
     
-    for row in read_file:
+    try:
         
-        ingested_event_url_list.append(row)
+        ingested_event_url_list = next(read_file)
+        
+    except:
+        
+        ingested_event_url_list = []
     
 #making a request for all completed UFC events
 event_all_url = "http://ufcstats.com/statistics/events/completed?page=all"
@@ -63,7 +65,11 @@ events_to_upload = []
 
 for index, url in enumerate(event_url_list):
     
-    if url not in ingested_event_url_list:
+    if url in ingested_event_url_list:
+        
+        pass
+        
+    else:
         
         events_to_upload.append((event_names[index], event_dates[index], event_locations[index]))
         
@@ -85,7 +91,7 @@ ufc_conn.commit()
 ufc_conn.close()
 
 #updating the ingestion history 
-with open('./data/ingested_event_urls.csv', 'a', newline='') as file:
+with open('./data/ingested_event_urls.csv', 'w', newline='') as file:
     
     csv_writer = csv.writer(file)
         
