@@ -3,8 +3,8 @@ import re
 import os
 import csv
 import sys
-sys.path.append('./src/')
-sys.path.append('./db/')
+sys.path.append('./db')
+sys.path.append('./extract')
 import psycopg2
 import requests
 import configparser
@@ -27,7 +27,7 @@ if not os.path.exists("./data/ingested_event_urls.csv"):
     
 else:
     
-    print("../data/ingested_event_urls.csv already present")
+    print("./data/ingested_event_urls.csv already present")
 
 # loading history of previously ingested events
 with open("./data/ingested_event_urls.csv", newline="") as file:

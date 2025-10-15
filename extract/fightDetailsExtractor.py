@@ -131,7 +131,7 @@ def getFightOutcome(bout_soup: bs4.BeautifulSoup) -> str:
     search = bout_soup.findAll("i", attrs={"class": re.compile("b-fight-details__text")})
 
     values_list = []
-    
+    judge_array = []
     for detail in search:    
         
         if 'Method:' in detail.text:
@@ -193,19 +193,25 @@ def getFightOutcome(bout_soup: bs4.BeautifulSoup) -> str:
             else:
                 
                 values_list.append(text)
-                
-        elif 'Details:' in detail.text:
+
+        elif ':' not in detail.text:
             
-            text = detail.text.split(':')[1].strip()
-            
-            if text == '':
+            lines = [line.strip().replace('.', '') for line in detail.text.splitlines() if line.strip()]
+
+            if len(lines) == 2:
                 
-                values_list.append(None)
+                judge_tuple = ','.join(lines)
                 
-            else:
-                
-                values_list.append(text)
-                
+                judge_array.append([judge_tuple])
+
+    if judge_array == []:
+        
+        values_list.append(None)
+        
+    else:
+        
+        values_list.append(judge_array)
+        
     return values_list
 
 def getSigStrkTrgts(bout_soup: bs4.BeautifulSoup) -> str:
@@ -265,7 +271,7 @@ def getFightStats(bout_soup: bs4.BeautifulSoup) -> str:
     if len(sections_soups) == 4:
         
         sections_data = []
-        
+
         for section in sections_soups:
             
             section_soup = section.findAll("p", attrs={"class": re.compile("b-fight-details__table-text")})
