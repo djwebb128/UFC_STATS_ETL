@@ -65,15 +65,15 @@ events_to_upload = []
 
 for index, url in enumerate(event_url_list):
     
-    if url in ingested_event_url_list:
-        
-        pass
-        
-    else:
+    if url not in ingested_event_url_list:
         
         events_to_upload.append((event_names[index], event_dates[index], event_locations[index]))
         
         ingested_event_url_list.append(url)
+        
+    else:
+
+        pass
 
 #creating database connection
 ufc_conn = pg.ufcConnect(config)
@@ -96,3 +96,5 @@ with open('./data/ingested_event_urls.csv', 'w', newline='') as file:
     csv_writer = csv.writer(file)
         
     csv_writer.writerow(ingested_event_url_list)
+
+print(f"Events uploaded to events table: {len(events_to_upload)}.")
